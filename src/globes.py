@@ -5,8 +5,10 @@ TRN = DAT + 'train/'
 VAL = DAT + 'val/'
 TST = DAT + 'test/'
 
-BTRN =  DAT + '/binary/train/'
-BVAL =  DAT + '/binary/val/'
+BTRN = DAT + 'binary/train/'
+BVAL = DAT + 'binary/val/'
+
+OVR = DAT + 'overfit'
 
 #Capstone directories
 CAP = '/Sunspotter/capstone/'

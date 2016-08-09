@@ -43,7 +43,9 @@ val_generator = val_datagen.flow_from_directory(
         color_mode = 'grayscale'
         )
 
-model, model_name = mod.build_model(train_generator.nb_class)
+#model, model_name = mod.build_model(train_generator.nb_class) cats
+
+model, model_name = mod.build_model()
 
 # saves the output in the model_dir
 model_dir = G.MOD + model_name + '/'
@@ -60,7 +62,7 @@ output = model.fit_generator(
         	nb_epoch=nb_epoch,
         	validation_data=val_generator,
         	nb_val_samples=val_generator.N,
-                callbacks=[checkpointer])
+            callbacks=[checkpointer])
 
 model.save(model_dir + 'final_model.hdf5')
 

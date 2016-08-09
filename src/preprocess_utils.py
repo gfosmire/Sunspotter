@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 import os
 
+images_path = '../data/images/'
+masks_path = '../data/masks/'
+
+image_post = '.HW.K.P.rdc.fits.gz'
+mask_post = '.HW.M.P.rdc.fits.gz'
+
 def tiler(arr, nrows, ncols):
     """
     Return an array of shape (n, nrows, ncols) where
@@ -97,3 +103,12 @@ def write_binary_png(filepath, pairs):
             plt.imsave(yes+pair[2]+'.png', pair[0])
             continue
         plt.imsave(no+pair[2]+'.png', pair[0])
+
+def populate_binary(filepath, inter_lst, keepall, start, stop):
+    """
+    """
+    for i in xrange(start, stop):
+        if not i%50:
+            print i
+        write_binary_png(filepath, fits_processor(images_path+inter_lst[i]+image_post,
+            masks_path+inter_lst[i]+mask_post, keepall))
