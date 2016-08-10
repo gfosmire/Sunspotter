@@ -5,6 +5,9 @@ TRN = DAT + 'train/'
 VAL = DAT + 'val/'
 TST = DAT + 'test/'
 
+IMG = DAT + 'image_arrays/'
+MSK = DAT + 'mask_arrays/'
+
 BTRN = DAT + 'binary/train/'
 BVAL = DAT + 'binary/val/'
 

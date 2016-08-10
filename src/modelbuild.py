@@ -21,25 +21,25 @@ img_height, img_width = 128, 128
 # this is the augmentation configuration we will use for training
 train_datagen = ImageDataGenerator(
         rescale=1./4000,
-        fill_mode='constant',
-        horizontal_flip=True)
+        fill_mode='constant')#,
+        #horizontal_flip=True)
 
 val_datagen = ImageDataGenerator(
         rescale=1./4000,
-        fill_mode='constant',
-        horizontal_flip=True)
+        fill_mode='constant')#,
+        #horizontal_flip=True)
 
 train_generator = train_datagen.flow_from_directory(
         G.BTRN,
         target_size=(img_width, img_height),
-        batch_size=64,
+        batch_size=128,
         color_mode = 'grayscale'
         )
 
 val_generator = val_datagen.flow_from_directory(
         G.BVAL,
         target_size=(img_width, img_height),
-        batch_size=64,
+        batch_size=128,
         color_mode = 'grayscale'
         )
 
@@ -57,7 +57,7 @@ checkpointer = ModelCheckpoint(filepath=temp_path, verbose=1, save_best_only=Tru
 
 # this actually fits the model
 output = model.fit_generator(
-        	train_generator,
+            train_generator,
         	samples_per_epoch=train_generator.N,
         	nb_epoch=nb_epoch,
         	validation_data=val_generator,

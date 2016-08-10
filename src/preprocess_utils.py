@@ -64,24 +64,22 @@ def fits_processor(image_name, mask_name, keepall=True, keepspace=False):
 
     return tile_pairs
 
-def write_binary(pairs):
+def write_arrays(pairs):
     """
     WARNING: this function assumes a file directory layout of being run from the src
-    folder, and there being a data/binary folder with 2 folders names 0 and 1 in it.
+    folder, and there being an image_arrays folder and a mask_arrays folder.
 
     Takes a list of tuple triplets of corresponding image and mask tiles and a
-    filename stub and saves image tiles that contain sunspots to data/binary/1,
-    and images that don't contain sunspots to data/binary/0 as a npy.
+    filename stub and saves image tiles to ../data/image_arrays, and mask tiles to
+    ../data/mask_arrays.
     """
 
-    yes = '../data/binary/1/'
-    no  = '../data/binary/0/'
+    image = '../data/image_arrays/'
+    mask  = '../data/mask_arrays/'
 
     for i, pair in enumerate(pairs):
-        if pair[1].sum():
-            np.save(yes+pair[2], pair[0])
-            continue
-        np.save(no+pair[2], pair[0])
+        np.save(image+pair[2], pair[0])
+        np.save(mask+pair[2], pair[1])
 
 def write_binary_png(filepath, pairs):
     """
@@ -106,9 +104,27 @@ def write_binary_png(filepath, pairs):
 
 def populate_binary(filepath, inter_lst, keepall, start, stop):
     """
+    Takes a filepath, a sorted list FITS filename stubs, the keepall flag, a start index,
+    and a stop index. Populates filepath with image PNGs sorted into folders denoting
+    if the image contains a sunspot or not.
     """
     for i in xrange(start, stop):
         if not i%50:
             print i
+
         write_binary_png(filepath, fits_processor(images_path+inter_lst[i]+image_post,
             masks_path+inter_lst[i]+mask_post, keepall))
+
+def populate_arrays(inter_lst, start, stop):
+    """
+    Takes a sorted list of FITS filename stubs, a start index, and a stop index.
+    Populates the ../data/image_arrays and ../data/mask_arrays folders with image
+    and mask tiles as .npy files, respectively.
+    """
+
+    for i in xrange(start, stop):
+        if not i%50:
+            print i
+
+        write_arrays(fits_processor(images_path+inter_lst[i]+image_post,
+            masks_path+inter_lst[i]+mask_post))
