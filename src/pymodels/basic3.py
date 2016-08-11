@@ -8,6 +8,7 @@ def build_model():
 
     model = Sequential()
     model.add(Convolution2D(64, 5, 5, input_shape=(1,128,128), init='he_normal'))
+    model.add(Dropout(0.5))
     model.add(Activation('relu'))
 
     model.add(Convolution2D(64, 3, 3, init='he_normal'))
@@ -25,6 +26,7 @@ def build_model():
     model.add(Flatten())
     model.add(Dense(128, init='he_normal'))
     model.add(Activation('relu'))
+    #model.add(Dropout(0.5))
     model.add(Dense(2))
     model.add(Activation('softmax'))
 

@@ -1,5 +1,5 @@
 import globes as G
-from keras.preprocessing.image import ImageDataGenerator
+import numpy as np
 from keras.callbacks import ModelCheckpoint
 import json
 import h5py
@@ -24,7 +24,33 @@ model_dir = G.MOD + model_name + '/'
 os.mkdir(model_dir)
 temp_path = model_dir + 'temp_model.hdf5'
 
-#update the model if stuff gets better
+# fetch the data
+print 'Starting data fetching'
+image_lst = os.listdir(G.IMG)
+mask_lst = os.listdir(G.MSK)
+image_lst.sort()
+mask_lst.sort()
+
+# build the arrays
+print 'Building arrays'
+X = np.zeros((len(image_lst),1,128,128), dtype=np.float32)
+for i, image in enumerate(image_lst):
+    X[i,0] = np.load(G.IMG+image)/4000.
+
+y = np.zeros((len(mask_lst),1,128,128), dtype=np.float32)
+for i, mask in enumerate(mask_lst):
+    y[i] = np.load(G.MSK+mask)
+
+print 'Arrays built'
+
+# shuffle the arrays
+indices = np.arange(len(image_lst))
+np.random.shuffle(indices)
+
+X = X[indices]
+y = y[indices]
+
+# update the model if stuff gets better
 checkpointer = ModelCheckpoint(filepath=temp_path, verbose=1, save_best_only=True)
 
 # this actually fits the model

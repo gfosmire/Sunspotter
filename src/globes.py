@@ -21,5 +21,4 @@ MOD = CAP + 'models/'
 SRC = CAP + 'src/'
 
 #Src subdirectories
-IMG = SRC + 'image_utils/'
 NET = SRC + 'pymodels/'
