@@ -3,11 +3,15 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 import os
 
+# The path to the data relative to the src folder
 images_path = '../data/images/'
 masks_path = '../data/masks/'
 
+# File type endings for images and masks, respectively
 image_post = '.HW.K.P.rdc.fits.gz'
 mask_post = '.HW.M.P.rdc.fits.gz'
+
+# Preprocessing Functions
 
 def tiler(arr, nrows, ncols):
     """
@@ -49,6 +53,7 @@ def fits_processor(image_name, mask_name, keepall=True, keepspace=False):
     tile_pairs = []
 
     for i in xrange(256):
+        # Skip tiles that contain only space if keepspace = False
         if (not keepspace) and (mask_tiles[i].sum() == 0):
             continue
 
@@ -64,18 +69,18 @@ def fits_processor(image_name, mask_name, keepall=True, keepspace=False):
 
     return tile_pairs
 
-def write_arrays(pairs):
+def write_arrays(filepath, pairs):
     """
-    WARNING: this function assumes a file directory layout of being run from the src
-    folder, and there being an image_arrays folder and a mask_arrays folder.
+    WARNING: this function assumes 2 folders named image_arrays and mask_arrays
+    in the filepath provided.
 
     Takes a list of tuple triplets of corresponding image and mask tiles and a
-    filename stub and saves image tiles to ../data/image_arrays, and mask tiles to
-    ../data/mask_arrays.
+    filename stub and saves image tiles to filepath/image_arrays, and mask tiles to
+    filepath/mask_arrays.
     """
 
-    image = '../data/image_arrays/'
-    mask  = '../data/mask_arrays/'
+    image = filepath + '/image_arrays/'
+    mask  = filepath + '/mask_arrays/'
 
     for i, pair in enumerate(pairs):
         np.save(image+pair[2], pair[0])
@@ -83,7 +88,7 @@ def write_arrays(pairs):
 
 def write_binary_png(filepath, pairs):
     """
-    WARNING: this function creates 2 folders in the filepath provided.
+    WARNING: this function assumes 2 folders named 0 and 1 are in the filepath provided.
 
     Takes a list of tuple triplets of corresponding image and mask tiles and a
     filename stub and saves image tiles that contain sunspots to filepath/1,
@@ -92,9 +97,6 @@ def write_binary_png(filepath, pairs):
 
     yes = filepath + '/1/'
     no  = filepath + '/0/'
-
-    #os.mkdir(yes)
-    #os.mkdir(no)
 
     for i, pair in enumerate(pairs):
         if pair[1].sum():
@@ -115,10 +117,10 @@ def populate_binary(filepath, inter_lst, keepall, start, stop):
         write_binary_png(filepath, fits_processor(images_path+inter_lst[i]+image_post,
             masks_path+inter_lst[i]+mask_post, keepall))
 
-def populate_arrays(inter_lst, start, stop):
+def populate_arrays(filepath, inter_lst, start, stop):
     """
-    Takes a sorted list of FITS filename stubs, a start index, and a stop index.
-    Populates the ../data/image_arrays and ../data/mask_arrays folders with image
+    Takes a filepath, a sorted list of FITS filename stubs, a start index, and a stop index.
+    Populates the filepath/image_arrays and filepath/mask_arrays folders with image
     and mask tiles as .npy files, respectively.
     """
 

@@ -1,2 +1,3 @@
 *.pem
 .remote-sync.json
+presentation/

@@ -7,55 +7,57 @@ import os
 import cPickle
 import sys
 
+"""
+This is the model builder for the family of binary classification models. It expects
+to be run from the commandline and to be passed the name of the model to be run.
+The model and the data need to be in the folders specified in the globes.py file
+of filepaths.
+"""
+
 sys.path.append(G.NET)
 model_filename = sys.argv[1]
 
 if len(model_filename) > 0:
     mod = __import__(model_filename)
 
-# parameters
+# Parameters
 nb_epoch = 25
-
+batch_size = 128
 img_height, img_width = 128, 128
 
-# this is the augmentation configuration we will use for training
+# This is the configuration that will be used for training and validation
 train_datagen = ImageDataGenerator(
-        rescale=1./4000,
-        fill_mode='constant')#,
-        #horizontal_flip=True)
+        rescale = 1./4000,
+        fill_mode = 'constant')
 
 val_datagen = ImageDataGenerator(
-        rescale=1./4000,
-        fill_mode='constant')#,
-        #horizontal_flip=True)
+        rescale = 1./4000,
+        fill_mode = 'constant')
 
 train_generator = train_datagen.flow_from_directory(
         G.BTRN,
-        target_size=(img_width, img_height),
-        batch_size=128,
-        color_mode = 'grayscale'
-        )
+        target_size = (img_width, img_height),
+        batch_size = batch_size,
+        color_mode = 'grayscale')
 
 val_generator = val_datagen.flow_from_directory(
         G.BVAL,
-        target_size=(img_width, img_height),
-        batch_size=128,
-        color_mode = 'grayscale'
-        )
+        target_size = (img_width, img_height),
+        batch_size = batch_size,
+        color_mode = 'grayscale')
 
-#model, model_name = mod.build_model(train_generator.nb_class) cats
-
+# This actually builds the model
 model, model_name = mod.build_model()
 
-# saves the output in the model_dir
+# Makes the folder that the model will be saved to
 model_dir = G.MOD + model_name + '/'
 os.mkdir(model_dir)
 temp_path = model_dir + 'temp_model.hdf5'
 
-#update the model if stuff gets better
+# This updates the temp model if loss improved
 checkpointer = ModelCheckpoint(filepath=temp_path, verbose=1, save_best_only=True)
 
-# this actually fits the model
+# Train and validate the model
 output = model.fit_generator(
             train_generator,
         	samples_per_epoch=train_generator.N,
@@ -64,6 +66,7 @@ output = model.fit_generator(
         	nb_val_samples=val_generator.N,
             callbacks=[checkpointer])
 
+# Save the model, history, and parameters
 model.save(model_dir + 'final_model.hdf5')
 
 hist = output.history
